@@ -78,7 +78,7 @@ Cette étape est « Facultatif » quand la conversation s’ouvre au mot « Corn
 
 ## 6. Ouvrir le miroir et activer la voix
 
-Cliquez sur **Activer et ouvrir le miroir**, à l’étape « Miroir ouvert ». Ce bouton réactive le démarrage automatique et ouvre la page du miroir dans sa propre fenêtre, l’administration restant ouverte. Acceptez l’accès au micro quand le navigateur le demande (touchez « Activer la voix » sur le miroir s’il l’affiche), puis passez la fenêtre du miroir en plein écran avec F11. Si l’accès à OpenAI est bloqué, le bouton s’appelle **Autoriser OpenAI et ouvrir le miroir** et lève aussi le blocage.
+Cliquez sur **Activer et ouvrir le miroir**, à l’étape « Miroir ouvert ». Ce bouton réactive le démarrage automatique et ouvre la page du miroir dans sa propre fenêtre, l’administration restant ouverte. Acceptez l’accès au micro quand le navigateur le demande (touchez « Activer la voix » sur le miroir s’il l’affiche), puis passez la fenêtre du miroir en plein écran avec F11. Si l’accès aux services IA est bloqué, le bouton s’appelle **Autoriser les services IA et ouvrir le miroir** et lève aussi le blocage.
 
 Tant que la clé OpenAI manque, le miroir affiche seulement l’orbe et « Cornelius n’est pas encore configuré : ouvrez l’administration sur cet ordinateur. », suivi de l’adresse de l’administration. C’est normal : l’étape « Miroir ouvert » est quand même validée.
 
