@@ -6,6 +6,20 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 
 ## Non publié
 
+### 2026-10-27 : Mistral comme fournisseur vocal
+
+**Ajouté**
+
+- Fournisseur de la conversation au choix, dans **Mise en route → Voix de Cornelius** : « OpenAI · GPT Live » (par défaut) ou « Mistral · Voxtral 3 » (contribution de thibautrey, #4). Avec Mistral, Voxtral écoute et parle, Mistral Small répond, appelle les outils de Cornelius et extrait les souvenirs.
+- Clé `MISTRAL_API_KEY`, dans « Clés et jetons » ou `.env`. Le changement de fournisseur exige sa clé et une conversation terminée.
+- Avec Mistral, facturé à la minute : fermeture après 20 secondes sans activité, 15 minutes au plus, session supprimée chez Mistral à chaque fermeture.
+
+**Modifié**
+
+- « Bloquer OpenAI » devient « Bloquer les services IA » et coupe les deux fournisseurs.
+- La carte « Voix de Cornelius » passe de la personnalité à « Mise en route ».
+- Documentation : page [Le fournisseur vocal](docs/fonctionnalites/fournisseur-vocal.md), confidentialité, administration et configuration à jour.
+
 ### 2026-10-23 : réglages du micro
 
 **Ajouté**

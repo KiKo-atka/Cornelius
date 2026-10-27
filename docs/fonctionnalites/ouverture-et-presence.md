@@ -101,7 +101,7 @@ Pour reprendre :
 - **Démarrer la session** dans le même panneau réactive le démarrage automatique, selon l’ouverture choisie ;
 - dire « Cornelius », quand le mot d’appel est prêt, vaut aussi une demande explicite et lève l’arrêt.
 
-**Bloquer OpenAI**, dans ce même panneau quand il est affiché en entier (rubrique **Quand il écoute**), coupe et interdit toute conversation tant qu’il n’est pas levé (voir [L’administration](../utilisation/administration.md)).
+**Bloquer les services IA**, dans ce même panneau quand il est affiché en entier (rubrique **Quand il écoute**), coupe et interdit toute conversation tant qu’il n’est pas levé (voir [L’administration](../utilisation/administration.md)).
 
 ## Micro gardé prêt (bêta)
 

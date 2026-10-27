@@ -20,6 +20,7 @@ Cette page est l’index de la documentation. Elle indique par où commencer, pu
 | recevoir une image du miroir sur mon téléphone | [L’envoi par e-mail](fonctionnalites/envoi-par-e-mail.md) |
 | écrire mon propre module | [Créer un module](https://github.com/lfpoulain/cornelius-modules/blob/main/docs/creer-un-module.md), dans le dépôt cornelius-modules |
 | comprendre pourquoi rien ne se passe | [Dépannage](utilisation/depannage.md) |
+| converser avec Mistral plutôt qu’OpenAI | [Le fournisseur vocal](fonctionnalites/fournisseur-vocal.md) |
 | savoir ce qui part sur Internet | [Confidentialité](reference/confidentialite.md) |
 | modifier le code | [Développer Cornelius](developpement/README.md), [Contribuer](../CONTRIBUTING.md) |
 
@@ -49,6 +50,7 @@ Cette page est l’index de la documentation. Elle indique par où commencer, pu
 - [L’envoi par e-mail](fonctionnalites/envoi-par-e-mail.md) : envoyer une image ou un message sur le téléphone d’une personne du foyer.
 - [Home Assistant](fonctionnalites/home-assistant.md) : lumières, prises et capteurs de la maison.
 - [Les agents Hermes](fonctionnalites/agents-hermes.md) : confier des demandes longues à un agent personnel.
+- [Le fournisseur vocal](fonctionnalites/fournisseur-vocal.md) : converser avec OpenAI (par défaut) ou Mistral, coût et limites.
 
 ## Modules
 
