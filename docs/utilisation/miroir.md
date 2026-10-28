@@ -94,7 +94,8 @@ L’affichage se règle source par source, dans l’administration : Modules →
 
 En bas de l’écran, une pastille par personne détectée :
 
-- le prénom de la personne si Cornelius la reconnaît, sinon « Personne inconnue » ;
+- le prénom de la personne si Cornelius la reconnaît, sinon « Personne inconnue », seulement après 1,5 s de présence : un visage vu un instant n’affiche rien ;
+- une pastille reste 3 s après la disparition de la personne, pour ne pas clignoter quand la détection hésite ;
 - la pastille devient verte quand la personne regarde le miroir, et repasse au gris en fondu, seulement si le regard se perd plus d’une seconde ;
 - la personne avec qui Cornelius converse a une pastille plus lumineuse.
 
