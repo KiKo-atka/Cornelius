@@ -6,6 +6,12 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 
 ## Non publié
 
+### 2026-10-28 : fin au regard malgré la parole
+
+**Modifié**
+
+- Avec l’ouverture au regard, parler en détournant les yeux ou de loin, souvent à quelqu’un d’autre, ne garde plus la conversation ouverte : elle se ferme après « Terminer après la perte du regard ». Seule une réponse de Cornelius en cours repousse encore cette fin.
+
 ### 2026-10-27 : Mistral comme fournisseur vocal
 
 **Ajouté**

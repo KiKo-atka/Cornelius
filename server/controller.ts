@@ -203,8 +203,8 @@ export class SessionController {
   private profileSeenAt: number | null = null;
   private cameraFaultSince: number | null = null;
   private crowdedFrames = 0;
-  // Fin prévue de la dernière activité vocale (personne ou Cornelius) de la session.
-  private voiceActiveUntil = 0;
+  // Fin prévue de la dernière réponse de Cornelius (réflexion ou parole) dans la session.
+  private assistantActiveUntil = 0;
   private presentSince: number | null = null;
   private presenceStable = false;
   private absenceSince: number | null = null;
@@ -1317,7 +1317,7 @@ export class SessionController {
     };
     this.started = false;
     this.controlReady = false;
-    this.voiceActiveUntil = 0;
+    this.assistantActiveUntil = 0;
     this.resetSilence();
     // Mode voix : la caméra s’allume avec la conversation et peut reconnaître la personne.
     this.voiceIdentityUntil =
@@ -1694,7 +1694,10 @@ export class SessionController {
       return false;
     const now = this.now();
     this.voice = { phase, startedAt: now, endsAt: phase === 'idle' ? null : now + durationMs };
-    if (phase !== 'idle') this.voiceActiveUntil = Math.max(this.voiceActiveUntil, now + durationMs);
+    // Seule la réponse de Cornelius retient la fin d’engagement : la personne qui parle en
+    // détournant les yeux ou de loin, souvent à quelqu’un d’autre, ne garde pas la conversation.
+    if (phase === 'thinking' || phase === 'speaking')
+      this.assistantActiveUntil = Math.max(this.assistantActiveUntil, now + durationMs);
     this.publish();
     return true;
   }
@@ -1749,12 +1752,13 @@ export class SessionController {
       if (this.absenceExpired(now)) this.departure();
       else if (
         // Seul le mode « Engagement » ouvre sur le regard : lui seul se termine à sa perte.
-        // La parole de la personne ou de Cornelius repousse cette fin.
+        // Une réponse de Cornelius en cours repousse cette fin, pas la parole de la personne.
         this.session.mode === 3 &&
         this.rawObservation?.presence &&
         this.engagementId !== null &&
         this.disengagedSince !== null &&
-        now - Math.max(this.disengagedSince, this.voiceActiveUntil) >= this.timings.disengagementMs
+        now - Math.max(this.disengagedSince, this.assistantActiveUntil) >=
+          this.timings.disengagementMs
       ) {
         // La personne est toujours là : seule la conversation se termine.
         this.engagedSince = null;

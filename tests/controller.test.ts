@@ -1081,7 +1081,7 @@ test('sans regard confirmé, une conversation tolère l’occultation aussi long
   assert.equal(f.state().session.reason, 'Fin de présence.');
 });
 
-test('la parole repousse la fin d’engagement', (t) => {
+test('la réponse de Cornelius repousse la fin d’engagement', (t) => {
   const f = fixture(t);
   f.engage([f.alice.id]);
   const scope = f.ready();
@@ -1091,6 +1091,20 @@ test('la parole repousse la fin d’engagement', (t) => {
   f.advance(7999);
   assert.equal(f.state().session.phase, 'ready');
   f.advance(1201);
+  assert.equal(f.state().session.phase, 'closing');
+  assert.equal(f.state().session.reason, 'Fin d’engagement.');
+});
+
+test('la parole de la personne qui ne regarde plus ne repousse pas la fin d’engagement', (t) => {
+  const f = fixture(t);
+  f.engage([f.alice.id]);
+  const scope = f.ready();
+  f.observe({ engaged: false });
+  f.advance(7000);
+  assert.equal(f.controller.setVoiceActivity(scope, 'listening', 1200), true);
+  f.advance(999);
+  assert.equal(f.state().session.phase, 'ready');
+  f.advance(1);
   assert.equal(f.state().session.phase, 'closing');
   assert.equal(f.state().session.reason, 'Fin d’engagement.');
 });
