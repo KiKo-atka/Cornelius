@@ -35,7 +35,7 @@ Cette page aide à comprendre pourquoi Cornelius ne répond pas, ne démarre pas
 | « Hôte non autorisé. » | La page est ouverte sous un nom que Cornelius ne connaît pas. | Utilisez l’adresse IP de l’ordinateur, son nom suivi de `.local`, ou ajoutez le nom à `CORNELIUS_ALLOWED_HOSTS`. |
 | « Accès réservé au réseau local. » | La demande vient d’Internet, ou `CORNELIUS_LAN=0` et elle vient d’un autre appareil. | Ouvrez Cornelius depuis la maison. Ne redirigez pas le port 3443 sur votre box. |
 | Un autre appareil n’arrive pas à ouvrir `https://…:3443/` | Pare-feu, réseau Windows classé « Public », ou adresse de l’ordinateur changée. | Voir [Le pare-feu](reseau-local.md#le-pare-feu). Vérifiez l’adresse dans la carte **Accès depuis le réseau local**. |
-| « Mot de passe par défaut : changez-le d’abord dans l’administration… » | La connexion vient d’un autre appareil alors que le mot de passe vaut encore `cornelius`. | Sur l’ordinateur de Cornelius, changez-le dans **Mise en route**, carte « Mot de passe administrateur ». |
+| « Mot de passe par défaut : changez-le d’abord dans l’administration… » | La connexion vient d’un autre appareil alors que le mot de passe vaut encore `cornelius`. | Sur l’ordinateur de Cornelius, changez-le dans **Mise en route**, carte « Mot de passe administrateur ». Sans écran (installation par SSH), lancez `npm run password` dans le dossier de Cornelius. |
 
 ## Le serveur ne démarre pas
 

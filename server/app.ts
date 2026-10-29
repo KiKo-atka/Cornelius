@@ -947,7 +947,7 @@ export async function createApp(
       if (defaultPassword() && !fromMachine(request))
         return reply.code(403).send({
           error:
-            'Mot de passe par défaut : changez-le d’abord dans l’administration, sur l’ordinateur du miroir (Mise en route).',
+            'Mot de passe par défaut : changez-le d’abord dans l’administration, sur l’ordinateur du miroir (Mise en route), ou dans un terminal de cet ordinateur avec npm run password.',
         });
       purgeSessions();
       const existing = request.cookies[adminCookie];

@@ -12,7 +12,7 @@ Cette page vous guide de la fin de l’installation jusqu’à la première conv
 
 Ouvrez `http://127.0.0.1:3000/admin`. Saisissez le « Mot de passe administrateur », puis cliquez sur **Ouvrir cet espace**.
 
-Le mot de passe est la valeur de `CORNELIUS_ADMIN_PASSWORD` dans le fichier `.env`, `cornelius` au départ. Changez-le dès maintenant dans **Mise en route**, carte « Mot de passe administrateur » (8 caractères au moins) : il remplace celui de `.env`, sans redémarrage.
+Le mot de passe est la valeur de `CORNELIUS_ADMIN_PASSWORD` dans le fichier `.env`, `cornelius` au départ. Changez-le dès maintenant dans **Mise en route**, carte « Mot de passe administrateur » (8 caractères au moins) : il remplace celui de `.env`, sans redémarrage. Dans un terminal, `npm run password` fait la même chose.
 
 ```sh
 systemctl --user restart cornelius        # Linux, avec les services systemd

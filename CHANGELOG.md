@@ -15,6 +15,8 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 - L’installateur ne télécharge pas le modèle de vision sur une petite machine (`perception/download_models.py --no-vision`).
 - Page [Installer sur Raspberry Pi](docs/installation/raspberry-pi.md).
 
+- `npm run password` choisit le mot de passe de l’administration depuis un terminal (saisie masquée, gardé en base comme celui de la **Mise en route**, sans redémarrage). L’installateur Linux le propose à la fin tant que le mot de passe de départ est en place, puis affiche l’adresse de l’administration depuis un autre appareil : une installation par SSH n’est plus bloquée par le refus du mot de passe de départ à distance.
+
 **Corrigé**
 
 - Avec `--systemd`, l’installateur Linux active le « linger » du compte (`sudo loginctl enable-linger`) : les services ne s’arrêtent plus à la fermeture du terminal SSH et démarrent avec l’ordinateur, sans session ouverte. Constaté sur un Raspberry Pi 5 sous Raspberry Pi OS Lite.

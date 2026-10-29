@@ -261,8 +261,18 @@ UNIT
   fi
 fi
 
+# Depuis un autre appareil, l’administration refuse le mot de passe de départ : sur une
+# installation par SSH, c’est ici qu’on peut le changer.
+step "Mot de passe de l’administration"
+npm run --silent password -- --if-default || warn "mot de passe inchangé : npm run password pour le choisir."
+
 step "Terminé"
 port="$(server_port)"
-echo "Administration : http://127.0.0.1:$port/admin (mot de passe dans .env, à changer)."
+echo "Administration : http://127.0.0.1:$port/admin"
+https_port="$(sed -n 's/^CORNELIUS_HTTPS_PORT=\([0-9][0-9]*\).*/\1/p' .env | tail -n 1)"
+lan_ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+if [ -n "$lan_ip" ] && ! grep -Eqi '^CORNELIUS_LAN=(0|false|non|no)\s*$' .env; then
+  echo "Depuis un autre appareil : https://$lan_ip:${https_port:-$((port + 443))}/admin (certificat à accepter)."
+fi
 grep -q '^OPENAI_API_KEY=.' .env || echo "Renseignez OPENAI_API_KEY dans .env pour la conversation."
 [ "$systemd" = 1 ] || echo "Démarrage : scripts/start.sh (arrêt : scripts/stop.sh), ou relancez avec --systemd."

@@ -76,8 +76,9 @@ Voici ce que fait réellement le script, dans l’ordre :
 7. Avec `--wake`, il installe openWakeWord et prévient si le modèle `models/cornelius.onnx` manque. Ce modèle est fourni dans le dépôt : voir [Mot d’appel](../fonctionnalites/mot-d-appel.md).
 8. Il liste les caméras `/dev/video*` et signale celles qui ne sont pas lisibles.
 9. Avec `--systemd`, il installe et démarre les services, puis les autorise à tourner sans session ouverte (voir plus bas).
+10. Si l’administration a encore le mot de passe de départ `cornelius`, il vous en demande un autre (8 caractères au moins, saisie masquée, Entrée pour le faire plus tard). Depuis un autre appareil, l’administration refuse de s’ouvrir avec le mot de passe de départ : sur une installation par SSH, c’est le moment de le changer. Hors d’un terminal (installation automatisée), il passe sans rien demander.
 
-À la fin, il affiche l’adresse de l’administration et rappelle la clé OpenAI si elle manque.
+À la fin, il affiche l’adresse de l’administration, sur cet ordinateur et depuis un autre appareil du réseau, et rappelle la clé OpenAI si elle manque.
 
 Si le script s’arrête en route, corrigez la cause puis relancez-le avec les mêmes options. Il refait chaque étape, mais garde ce qui est déjà prêt. Deux cas courants :
 
@@ -98,7 +99,7 @@ nano .env
 OPENAI_API_KEY=sk-...
 ```
 
-Profitez-en pour changer `CORNELIUS_ADMIN_PASSWORD` (4 caractères au moins). Redémarrez ensuite le serveur pour qu’il lise le fichier :
+Le mot de passe de l’administration se change avec `npm run password`, dans le dossier de Cornelius : il compte aussitôt, sans redémarrage, comme celui choisi dans **Mise en route**. Après une modification de `.env`, redémarrez le serveur pour qu’il lise le fichier :
 
 ```sh
 systemctl --user restart cornelius        # avec les services systemd

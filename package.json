@@ -19,6 +19,7 @@
     "check": "tsc --noEmit",
     "test": "tsx --disable-warning=ExperimentalWarning --test \"tests/*.test.ts\" \"addons/*/*.test.ts\"",
     "setup": "tsx scripts/setup.ts",
+    "password": "tsx --env-file-if-exists=.env --disable-warning=ExperimentalWarning scripts/admin-password.ts",
     "test:e2e": "playwright test",
     "test:modules": "tsx scripts/test-modules.ts",
     "mesures": "tsx scripts/mesures.ts",
