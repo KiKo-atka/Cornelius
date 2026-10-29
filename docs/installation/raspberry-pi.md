@@ -56,13 +56,91 @@ Le script demande votre mot de passe pour `sudo` deux fois au plus : pour les pa
 
 ## Ouvrir le miroir au démarrage
 
-Cornelius ne lance pas le navigateur lui-même. Pour que le miroir s’affiche seul au démarrage du Pi :
+Cornelius ne lance pas le navigateur lui-même : c’est un réglage du système, différent selon que le Pi a un bureau ou non. Dans les deux cas, gardez toujours la même adresse, `http://127.0.0.1:3000/` : `127.0.0.1` et `localhost` sont deux sites différents pour le navigateur.
+
+### Avec le bureau (Raspberry Pi OS « with desktop »)
 
 1. Ouvrez une fois `http://127.0.0.1:3000/` dans Chromium.
 2. Autorisez durablement le micro et le son pour ce site (cadenas à gauche de l’adresse, « Paramètres du site », **Microphone** et **Son** sur « Autoriser »). Sans cela, il faut toucher **Activer la voix** à chaque démarrage (voir le [dépannage](../utilisation/depannage.md)).
 3. Ajoutez Chromium en plein écran au démarrage de la session graphique, par exemple avec la commande `chromium --kiosk http://127.0.0.1:3000/` (`chromium-browser` sur Raspberry Pi OS Bookworm) dans les applications lancées au démarrage du bureau.
 
-Gardez toujours la même adresse : `127.0.0.1` et `localhost` sont deux sites différents pour le navigateur.
+### Sans bureau (Raspberry Pi OS Lite)
+
+Raspberry Pi OS Lite n’a pas d’interface graphique. Le plus léger est [cage](https://github.com/cage-kiosk/cage), qui affiche une seule application en plein écran : Chromium y ouvre le miroir, sans barre ni bureau. Les commandes se tapent en SSH, dans le compte qui a installé Cornelius. Cette méthode a été vérifiée sur un Raspberry Pi 5 sous Raspberry Pi OS Lite 64 bits (Debian 13), avec cage 0.3 et Chromium 156.
+
+**1. Installer cage, Chromium et wlrctl.** wlrctl sert à une seule chose, plus bas : faire disparaître le pointeur.
+
+```sh
+sudo apt install cage chromium wlrctl
+```
+
+**2. Autoriser d’avance le micro, la caméra et le son.** Sans souris ni clavier, personne ne peut répondre à la demande d’autorisation du navigateur. Une règle de Chromium l’accorde à l’adresse du miroir seulement :
+
+```sh
+sudo mkdir -p /etc/chromium/policies/managed
+sudo tee /etc/chromium/policies/managed/cornelius.json >/dev/null <<'EOF'
+{
+  "AudioCaptureAllowedUrls": ["http://127.0.0.1:3000"],
+  "VideoCaptureAllowedUrls": ["http://127.0.0.1:3000"],
+  "AutoplayAllowlist": ["http://127.0.0.1:3000"],
+  "TranslateEnabled": false,
+  "PasswordManagerEnabled": false
+}
+EOF
+```
+
+**3. Créer le script du kiosque.** Il attend que le serveur réponde, puis lance Chromium dans cage :
+
+```sh
+mkdir -p ~/.local/bin
+cat >~/.local/bin/cornelius-kiosk <<'EOF'
+#!/bin/sh
+# Miroir Cornelius en plein écran : attend le serveur, puis Chromium seul dans cage.
+until curl -sf -o /dev/null http://127.0.0.1:3000/; do sleep 1; done
+exec cage -s -- sh -c '
+  chromium --kiosk --ozone-platform=wayland --noerrdialogs --disable-infobars \
+    --no-first-run --password-store=basic --disable-session-crashed-bubble \
+    http://127.0.0.1:3000/ &
+  # Chromium ne change de pointeur qu’au premier mouvement : un pixel, une fois la page chargée.
+  sleep 20; wlrctl pointer move 1 0
+  wait
+'
+EOF
+chmod +x ~/.local/bin/cornelius-kiosk
+```
+
+Le miroir cache le pointeur de la souris quand elle ne bouge pas, mais Chromium n’applique ce changement qu’au mouvement suivant : sans le déplacement d’un pixel fait par `wlrctl`, une flèche resterait au milieu de l’écran. Un outil comme `unclutter` ne sert à rien ici : il ne fonctionne qu’avec X11, et cage utilise Wayland.
+
+**4. Lancer le kiosque au démarrage.** Le Pi ouvre une session sur l’écran sans mot de passe, et cette session lance le script. Si Chromium se ferme, la session se rouvre et le relance.
+
+```sh
+sudo raspi-config nonint do_boot_behaviour B2
+cat >>~/.profile <<'EOF'
+
+# Kiosque : sur l’écran (tty1), lancer le miroir ; à sa fermeture, la session se rouvre seule.
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = /dev/tty1 ]; then
+  exec "$HOME/.local/bin/cornelius-kiosk"
+fi
+EOF
+sudo reboot
+```
+
+Le miroir apparaît environ une minute après la mise sous tension. Les connexions SSH ne sont pas touchées : seule la session de l’écran (`tty1`) lance le kiosque.
+
+Pour arrêter le kiosque, retirez le bloc ajouté à `~/.profile` et remettez la connexion par mot de passe (`sudo raspi-config nonint do_boot_behaviour B1`), puis redémarrez. Pour le relancer sans redémarrer, après une mise à jour par exemple : `pkill -x cage`.
+
+### L’écran
+
+Un écran HDMI fonctionne sans réglage. Un écran DSI (nappe plate) se déclare dans `/boot/firmware/config.txt`, avec la ligne que donne son fabricant, puis demande un redémarrage. Par exemple, pour le Waveshare **7inch DSI LCD (C)** (1024 × 600, tactile) sur un Pi 5, branché sur le port DSI 1 avec son câble 4 broches sur l’alimentation 5 V et le bus I2C1 (broches 3 et 5) :
+
+```sh
+echo 'dtoverlay=vc4-kms-dsi-waveshare-panel,7_0_inchC,i2c1' | sudo tee -a /boot/firmware/config.txt
+sudo reboot
+```
+
+Sans l’option `i2c1`, l’écran reste noir et le tactile n’est pas reconnu, alors que le système croit l’écran branché. Pour vérifier : `cat /sys/class/drm/*DSI*/status` répond `connected`, et `grep -i touch /proc/bus/input/devices` nomme le tactile (`Goodix Capacitive TouchScreen`).
+
+L’écran DSI ne transporte pas le son : il faut un haut-parleur USB, ou mieux un haut-parleur de conférence USB qui contient aussi le micro.
 
 ## Forcer ou désactiver le mode petite machine
 
