@@ -50,6 +50,8 @@ scripts/install-linux.sh --system-deps --wake --systemd
 
 Le script affiche le processeur et la carte, puis « Petite machine : sans vision locale ni génération d’images locale ». Il installe Python 3.12 à part (Raspberry Pi OS fournit une autre version), la perception sur le processeur, et seulement les modèles des visages, de la parole et du mot d’appel : le modèle de vision n’est pas téléchargé. L’option `--gpu` n’accepte que `auto` ou `cpu` en ARM64.
 
+Le script demande votre mot de passe pour `sudo` deux fois au plus : pour les paquets du système, puis pour laisser tourner les services sans session ouverte. Sans ce second réglage, Cornelius s’arrêterait dès la fermeture du terminal SSH et ne démarrerait pas avec le Pi, car Raspberry Pi OS Lite n’ouvre aucune session au démarrage.
+
 ## Ouvrir le miroir au démarrage
 
 Cornelius ne lance pas le navigateur lui-même. Pour que le miroir s’affiche seul au démarrage du Pi :

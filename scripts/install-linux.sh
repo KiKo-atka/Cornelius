@@ -12,7 +12,8 @@
 #   --no-models           ne télécharge pas les modèles (visages, voix, vision 450m ; pas de
 #                         vision sur Raspberry Pi)
 #   --no-build            ne compile pas l’interface
-#   --systemd             installe et démarre les services utilisateur (serveur, perception)
+#   --systemd             installe et démarre les services utilisateur (serveur, perception),
+#                         lancés au démarrage même sans session ouverte (loginctl, avec sudo)
 #   -h, --help            affiche cette aide
 #
 # Le script est rejouable : il garde .env, l’environnement Python et les modèles déjà vérifiés.
@@ -34,7 +35,7 @@ while [ $# -gt 0 ]; do
     --no-models) models=0 ;;
     --no-build) build=0 ;;
     --systemd) systemd=1 ;;
-    -h | --help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h | --help) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Option inconnue : $1 (voir --help)" >&2; exit 2 ;;
   esac
   shift
@@ -249,8 +250,14 @@ UNIT
   systemctl --user daemon-reload
   systemctl --user enable --now cornelius.service cornelius-perception.service
   echo "Services actifs. Journaux : journalctl --user -u cornelius -f"
+  # Sans « linger », systemd arrête les services à la fin de la dernière session (fermeture du
+  # terminal SSH) et ne les lance pas au démarrage tant que personne ne se connecte.
   if [ "$(loginctl show-user "$USER" -p Linger --value 2>/dev/null || true)" != yes ]; then
-    echo "Pour démarrer sans ouverture de session : sudo loginctl enable-linger \"$USER\""
+    if sudo loginctl enable-linger "$USER"; then
+      echo "Services lancés au démarrage de l’ordinateur, sans ouverture de session."
+    else
+      warn "les services s’arrêteront à la fermeture de votre session. Pour les garder : sudo loginctl enable-linger \"$USER\""
+    fi
   fi
 fi
 

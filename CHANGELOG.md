@@ -15,6 +15,10 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 - L’installateur ne télécharge pas le modèle de vision sur une petite machine (`perception/download_models.py --no-vision`).
 - Page [Installer sur Raspberry Pi](docs/installation/raspberry-pi.md).
 
+**Corrigé**
+
+- Avec `--systemd`, l’installateur Linux active le « linger » du compte (`sudo loginctl enable-linger`) : les services ne s’arrêtent plus à la fermeture du terminal SSH et démarrent avec l’ordinateur, sans session ouverte. Constaté sur un Raspberry Pi 5 sous Raspberry Pi OS Lite.
+
 ### 2026-10-28 : fin au regard malgré la parole
 
 **Modifié**

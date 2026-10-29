@@ -62,7 +62,7 @@ Le script peut être relancé autant de fois que nécessaire. Il garde le fichie
 | `--wake` | Installe l’écoute locale du mot d’appel « Cornelius ». |
 | `--no-models` | Ne télécharge pas les modèles (visages, détection de la voix, vision 450M). |
 | `--no-build` | Ne compile pas l’interface. `scripts/start.sh` la compilera au premier démarrage. |
-| `--systemd` | Installe et démarre les deux services qui lancent Cornelius au démarrage. |
+| `--systemd` | Installe et démarre les deux services qui lancent Cornelius au démarrage de l’ordinateur, même sans session ouverte (demande le mot de passe `sudo`). |
 | `-h`, `--help` | Affiche l’aide. |
 
 Voici ce que fait réellement le script, dans l’ordre :
@@ -75,7 +75,7 @@ Voici ce que fait réellement le script, dans l’ordre :
 6. Il télécharge les modèles, chacun vérifié par son empreinte SHA-256, avec `perception/download_models.py --device auto`.
 7. Avec `--wake`, il installe openWakeWord et prévient si le modèle `models/cornelius.onnx` manque. Ce modèle est fourni dans le dépôt : voir [Mot d’appel](../fonctionnalites/mot-d-appel.md).
 8. Il liste les caméras `/dev/video*` et signale celles qui ne sont pas lisibles.
-9. Avec `--systemd`, il installe et démarre les services (voir plus bas).
+9. Avec `--systemd`, il installe et démarre les services, puis les autorise à tourner sans session ouverte (voir plus bas).
 
 À la fin, il affiche l’adresse de l’administration et rappelle la clé OpenAI si elle manque.
 
@@ -126,10 +126,10 @@ journalctl --user -u cornelius -f
 journalctl --user -u cornelius-perception -f
 ```
 
-Sans réglage supplémentaire, les services ne démarrent qu’à l’ouverture de votre session. Pour qu’ils démarrent avec l’ordinateur, avant toute connexion, autorisez-les une fois :
+Par défaut, systemd ne fait tourner les services d’un compte que pendant une session ouverte : ils s’arrêteraient à la fermeture du terminal SSH et ne démarreraient pas avec l’ordinateur. Le script lève cette limite avec `sudo loginctl enable-linger "$USER"`, qui demande votre mot de passe. Sans droits `sudo`, il prévient : faites-le alors faire une fois par un administrateur. Pour vérifier :
 
 ```sh
-sudo loginctl enable-linger "$USER"
+loginctl show-user "$USER" -p Linger     # Linger=yes
 ```
 
 Les services utilisent le chemin de Node.js trouvé pendant l’installation. Après un changement de version de Node.js, relancez `scripts/install-linux.sh --systemd` pour les mettre à jour.
