@@ -132,6 +132,7 @@ export function registerHardware(
     if (!visionModelSettings(req.body))
       return reply.code(400).send({ error: 'Modèle de vision inconnu.' });
     try {
+      services.vision.assertAvailable();
       services.downloads.ensure(req.body.model, services.vision.snapshot().device);
       services.vision.setModel(req.body.model);
       return { ok: true };
@@ -150,6 +151,7 @@ export function registerHardware(
     if (!visionDeviceSettings(req.body))
       return reply.code(400).send({ error: 'Périphérique de vision inconnu.' });
     try {
+      services.vision.assertAvailable();
       services.downloads.ensure(services.vision.snapshot().modelId, req.body.device);
       services.vision.setDevice(req.body.device);
       return { ok: true };

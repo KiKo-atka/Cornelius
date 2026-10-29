@@ -71,6 +71,7 @@ Les valeurs de `.env` ne sont jamais copiées dans la base ; un jeton saisi dans
 | Variable | Défaut | Effet | Lue par |
 |---|---|---|---|
 | `CORNELIUS_CAMERA_INDEX` | `0` | Numéro de la caméra (au sens d’OpenCV) ouverte par la perception au démarrage. | perception |
+| `CORNELIUS_SMALL_MACHINE` | détection automatique | `1`, `true`, `oui` ou `yes` : petite machine, comme un Raspberry Pi (vision locale et générateur d’images local retirés, visages cherchés sur une image de 640 pixels de large). `0`, `false`, `non` ou `no` : jamais. Sans valeur, un Raspberry Pi est reconnu par le nom de sa carte. Voir [Installer sur Raspberry Pi](../installation/raspberry-pi.md). | serveur, `scripts/install-linux.sh` |
 | `CORNELIUS_VISION_MODEL` | `450m` | Modèle de vision chargé au démarrage : `450m`, `1.6b` ou `3b`. Une autre valeur revient à `450m`. | perception, `perception/download_models.py` |
 | `CORNELIUS_VISION_DEVICE` | `auto` | Calcul de la vision au démarrage : `auto` (carte graphique si disponible), `gpu` ou `cpu`. | perception, `perception/download_models.py` |
 | `CORNELIUS_VISION_PROVIDER` | choix automatique | Moteur ONNX imposé : `CUDAExecutionProvider`, `MIGraphXExecutionProvider`, `ROCMExecutionProvider` (anciennes versions d’ONNX Runtime), `DmlExecutionProvider` ou `CPUExecutionProvider`. | perception, `perception/download_models.py` |

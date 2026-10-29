@@ -278,6 +278,8 @@ export interface VisionStatus {
   lastRequestAt: number | null;
   lastLatencyMs: number | null;
   history: VisionEvent[];
+  /** Vision locale retirée sur cette machine (Raspberry Pi) : la raison, sinon absent. */
+  unavailable?: string | null;
 }
 /** Clé OpenAI ou jeton d’un module, vu par l’administration : jamais sa valeur. */
 export interface SecretView {
@@ -311,8 +313,19 @@ export interface NetworkStatus {
   trustedDevices?: number;
 }
 
+/** Machine qui fait tourner le serveur (absent des anciens serveurs). */
+export interface MachineStatus {
+  /** Architecture du processeur vue par Node : x64, arm64… */
+  arch: string;
+  /** Carte donnée par le device tree, par exemple « Raspberry Pi 5 Model B Rev 1.0 ». */
+  board: string | null;
+  /** Petite machine : ni vision locale ni images locales, visages cherchés sur une image réduite. */
+  small: boolean;
+}
+
 export interface DevicesStatus {
   presenceTimings?: PresenceTimings;
+  machine?: MachineStatus;
   apiConfigured: boolean;
   perceptionConfigured: boolean;
   /** CORNELIUS_ADMIN_PASSWORD vaut encore la valeur par défaut (sa valeur n’est jamais diffusée). */
@@ -375,6 +388,8 @@ export interface ImageGenerationStatus {
   openaiQuality: OpenAIImageQuality;
   /** Raison pour laquelle OpenAI ne peut pas créer d’image (clé absente, connexions bloquées). */
   openaiUnavailable: string | null;
+  /** Générateur local retiré sur cette machine (Raspberry Pi) : la raison, sinon absent. */
+  localUnavailable?: string | null;
   /** Modèle chargé dès le démarrage du worker, avant la première conversation. */
   preload: boolean;
   /** Images demandées encore réaffichables (trois au plus, effacées au redémarrage). */

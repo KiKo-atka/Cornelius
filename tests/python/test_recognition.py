@@ -245,6 +245,29 @@ class RecognitionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 vision.configure_engagement({"poseTolerance": .6, "minFaceRatio": .08})
 
+    def test_small_machine_detects_on_a_reduced_image_and_recognizes_on_the_full_one(self):
+        # Visage trouvé sur l’image réduite de moitié : cadre et repères doublés pour l’image entière.
+        found = np.array([[50,50,90,90,70,75,120,75,95,95,75,115,115,115,.99]], dtype=np.float32)
+        with good_quality(), patch("vision.cv2.FaceDetectorYN.create") as detector,                 patch("vision.cv2.FaceRecognizerSF.create") as recognizer:
+            detector.return_value.detect.return_value = (1, found)
+            recognizer.return_value.feature.return_value = np.ones((1, 128), dtype=np.float32)
+            vision = Vision(Path("models"))
+            frame = np.zeros((720, 1280, 3), dtype=np.uint8)
+            vision.configure_detection(640)
+            vision.analyze(frame)
+            detector.return_value.setInputSize.assert_called_with((640, 360))
+            self.assertEqual(detector.return_value.detect.call_args[0][0].shape[:2], (360, 640))
+            aligned_frame, aligned_face = recognizer.return_value.alignCrop.call_args[0]
+            self.assertEqual(aligned_frame.shape[:2], (720, 1280))
+            np.testing.assert_allclose(aligned_face[:14], found[0, :14] * 2)
+            self.assertAlmostEqual(float(aligned_face[14]), .99, places=5)
+            self.assertEqual(found[0, 0], 50)
+            vision.configure_detection(None)
+            vision.analyze(frame)
+            detector.return_value.setInputSize.assert_called_with((1280, 720))
+            with self.assertRaises(ValueError):
+                vision.configure_detection(100)
+
 
 if __name__ == "__main__":
     unittest.main()

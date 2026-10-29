@@ -1663,3 +1663,74 @@ test('browser camera is opt-in, admin configured, same-origin and reserved to th
     200,
   );
 });
+
+test('sur Raspberry Pi, ni vision ni images locales, et les visages sont cherchés sur 640 px', async (t) => {
+  const machine = { arch: 'arm64', board: 'Raspberry Pi 5 Model B Rev 1.0', small: true };
+  const f = await fixture(t, { machine });
+  const headers = { origin, cookie: await f.login() };
+  const devices = (await f.app.inject({ url: '/api/admin/devices', headers })).json();
+  assert.deepEqual(devices.machine, machine);
+  assert.equal(devices.perception.vision.mode, 'off');
+  assert.match(devices.perception.vision.unavailable, /Raspberry Pi/u);
+  assert.equal(devices.imageGeneration.provider, 'openai');
+  assert.match(devices.imageGeneration.localUnavailable, /Raspberry Pi/u);
+  for (const [url, payload] of [
+    ['/api/admin/vision', { mode: 'scene' }],
+    ['/api/admin/vision/model', { model: '1.6b' }],
+    ['/api/admin/vision/device', { device: 'cpu' }],
+  ] as const) {
+    const response = await f.app.inject({ method: 'PATCH', url, headers, payload });
+    assert.equal(response.statusCode, 400, url);
+    assert.match(response.json().error, /Raspberry Pi/u);
+  }
+  const local = await f.app.inject({
+    method: 'PATCH',
+    url: '/api/admin/image-generation',
+    headers,
+    payload: { provider: 'local' },
+  });
+  assert.equal(local.statusCode, 409);
+  const install = await f.app.inject({
+    method: 'POST',
+    url: '/api/admin/image-generation/install',
+    headers,
+    payload: {},
+  });
+  assert.equal(install.statusCode, 409);
+  const enabled = await f.app.inject({
+    method: 'PATCH',
+    url: '/api/admin/image-generation',
+    headers,
+    payload: { enabled: true },
+  });
+  assert.equal(enabled.statusCode, 200, enabled.body);
+  assert.equal(enabled.json().provider, 'openai');
+
+  const messages: { type: string; detectionWidth?: unknown }[] = [];
+  const worker = await f.app.injectWS(
+    '/perception',
+    { headers: { host: 'localhost', origin, authorization: 'Bearer ' + 'p'.repeat(40) } },
+    { onInit: (ws) => ws.on('message', (data) => messages.push(JSON.parse(String(data)))) },
+  );
+  f.sockets.push(worker);
+  await setImmediate();
+  assert.equal(messages.find((message) => message.type === 'profiles')?.detectionWidth, 640);
+  assert.ok(!messages.some((message) => message.type === 'vision_warm'));
+});
+
+test('sur un PC, les visages sont cherchés sur l’image entière', async (t) => {
+  const f = await fixture(t);
+  const messages: { type: string; detectionWidth?: unknown }[] = [];
+  const worker = await f.app.injectWS(
+    '/perception',
+    { headers: { host: 'localhost', origin, authorization: 'Bearer ' + 'p'.repeat(40) } },
+    { onInit: (ws) => ws.on('message', (data) => messages.push(JSON.parse(String(data)))) },
+  );
+  f.sockets.push(worker);
+  await setImmediate();
+  assert.equal(messages.find((message) => message.type === 'profiles')?.detectionWidth, null);
+  const headers = { origin, cookie: await f.login() };
+  const devices = (await f.app.inject({ url: '/api/admin/devices', headers })).json();
+  assert.equal(devices.machine, undefined);
+  assert.equal(devices.imageGeneration.localUnavailable, null);
+});

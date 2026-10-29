@@ -12,7 +12,7 @@ Cette page est l’index de la documentation. Elle indique par où commencer, pu
 
 | Je veux… | Page |
 |---|---|
-| installer Cornelius | [Linux](installation/linux.md), [Windows](installation/windows.md), puis [carte graphique](installation/gpu.md) si besoin |
+| installer Cornelius | [Linux](installation/linux.md), [Raspberry Pi](installation/raspberry-pi.md), [Windows](installation/windows.md), puis [carte graphique](installation/gpu.md) si besoin |
 | réussir le premier lancement | [Premier démarrage](installation/premier-demarrage.md) |
 | choisir ce qui ouvre la conversation | [Ouverture et présence](fonctionnalites/ouverture-et-presence.md), [Mot d’appel](fonctionnalites/mot-d-appel.md) |
 | parler à Cornelius depuis une autre pièce | [Les satellites audio](fonctionnalites/satellites.md) |
@@ -27,6 +27,7 @@ Cette page est l’index de la documentation. Elle indique par où commencer, pu
 ## Installation
 
 - [Installer sous Linux](installation/linux.md) : le script d’installation, les services systemd, les mises à jour.
+- [Installer sur Raspberry Pi](installation/raspberry-pi.md) : Raspberry Pi 4 et 5, ce qui est retiré (vision locale, images locales), le miroir au démarrage.
 - [Installer sous Windows](installation/windows.md) : l’installation manuelle dans PowerShell, le démarrage et l’arrêt.
 - [Premier démarrage](installation/premier-demarrage.md) : la rubrique « Mise en route », étape par étape.
 - [Carte graphique (GPU)](installation/gpu.md) : quel matériel convient à la vision et aux images, et comment l’installer.

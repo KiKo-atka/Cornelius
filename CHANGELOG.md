@@ -6,6 +6,15 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 
 ## Non publié
 
+### 2026-10-29 : ARM64 et Raspberry Pi
+
+**Ajouté**
+
+- Installation sous Linux en ARM64 : `scripts/install-linux.sh` vérifie le processeur (x86-64 ou ARM64, 32 bits refusé) et n’accepte que `--gpu auto` ou `cpu` en ARM64.
+- Mode petite machine, reconnu seul sur un Raspberry Pi (nom de la carte dans le device tree) ou imposé par `CORNELIUS_SMALL_MACHINE` : vision locale retirée (module **Vision** masqué), générateur d’images local retiré (seul OpenAI reste ; des images jusque-là locales restent désactivées tant que l’administration ne les réactive pas), visages cherchés sur une image de 640 pixels de large puis reconnus sur l’image entière. Les réglages enregistrés sont gardés.
+- L’installateur ne télécharge pas le modèle de vision sur une petite machine (`perception/download_models.py --no-vision`).
+- Page [Installer sur Raspberry Pi](docs/installation/raspberry-pi.md).
+
 ### 2026-10-28 : fin au regard malgré la parole
 
 **Modifié**

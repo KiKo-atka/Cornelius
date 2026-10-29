@@ -50,6 +50,7 @@ import { createLiveGateway } from './live/gateway.js';
 import { PerceptionBridge } from './perception.js';
 import { ModelDownloads, type ModelLauncher } from './model-downloads.js';
 import { VisionBridge } from './vision.js';
+import { SMALL_MACHINE_DETECTION_WIDTH, smallMachineReason } from './machine.js';
 import { registerHardware } from './hardware.js';
 import { WakeArbiter } from './wake-arbiter.js';
 import { SatelliteStore } from './satellites-store.js';
@@ -274,6 +275,8 @@ export async function createApp(
       ? mkdtempSync(join(tmpdir(), 'cornelius-images-'))
       : resolve('data', 'generated-images'),
   );
+  // Raspberry Pi : pas de générateur local, les images passent par OpenAI.
+  if (config.machine?.small) imageGeneration.restrictToOpenAI(smallMachineReason(config.machine));
   const mailRepository = new MailRepository(db, now);
   const mailer = new Mailer(
     mailRepository,
@@ -430,6 +433,8 @@ export async function createApp(
         kiosk.socket.send(JSON.stringify(perception.browserCameraConfig()));
     },
     now,
+    // Raspberry Pi : les visages sont cherchés sur une image réduite, reconnus sur l’image entière.
+    config.machine?.small ? SMALL_MACHINE_DETECTION_WIDTH : null,
   );
   // Miroir et satellites entendent parfois le même « Cornelius » : le meilleur score l’emporte.
   const wakeArbiter = new WakeArbiter(() => perception.wakeStreamCount());
@@ -448,6 +453,7 @@ export async function createApp(
     const local = perception.snapshot();
     return {
       presenceTimings: controller.getPresenceTimings(),
+      machine: config.machine,
       apiConfigured: !!selectedVoiceKey(),
       perceptionConfigured: !!config.perceptionToken,
       defaultPassword: defaultPassword(),
@@ -482,6 +488,8 @@ export async function createApp(
     (name, details) =>
       logs.write(name === 'vision_echec' ? 'warn' : 'info', 'mesure', name, details),
   );
+  // Raspberry Pi : la description de la scène est trop lourde, seule la reconnaissance reste.
+  if (config.machine?.small) vision.restrict(smallMachineReason(config.machine));
   const downloads = new ModelDownloads(
     () => broadcast({ schemaVersion: 1, type: 'devices', status: devices() }, true),
     (model) => vision.modelInstalled(model),
