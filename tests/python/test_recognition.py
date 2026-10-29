@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "perception"))
-from recognition import Identity, required_margin
+from recognition import Identity, required_margin, vote_window
 from vision import Vision, profile_score, profile_similarity
 
 
@@ -28,6 +28,22 @@ class RecognitionTests(unittest.TestCase):
         for i in range(3):
             self.assertIsNone(identity.update([(.6, "sacha")], i * .125, .42))
         self.assertEqual(identity.update([(.6, "sacha")], .375, .42), "sacha")
+
+    def test_a_slow_machine_still_confirms_with_four_frames(self):
+        # Sans carte graphique : 450 ms par image, quatre images ne tiennent pas en 1,2 s.
+        identity = Identity()
+        for i in range(3):
+            self.assertIsNone(identity.update([(.6, "sacha")], i * .45, .42))
+        self.assertEqual(identity.update([(.6, "sacha")], 3 * .45, .42), "sacha")
+
+    def test_a_pause_does_not_stretch_the_window(self):
+        self.assertEqual(vote_window(None), 1.2)
+        self.assertEqual(vote_window(.125), 1.2)
+        self.assertAlmostEqual(vote_window(.45), 2.025)
+        identity = Identity()
+        identity.update([(.6, "sacha")], 0, .42)
+        identity.update([(.6, "sacha")], 30, .42)
+        self.assertLessEqual(vote_window(identity.interval), 4.5)
 
     def test_poor_quality_frames_neither_confirm_nor_contradict(self):
         identity = Identity()
