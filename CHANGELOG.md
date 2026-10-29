@@ -14,12 +14,12 @@ Le fonctionnement actuel est décrit dans la [documentation](docs/README.md). Ce
 - Mode petite machine, reconnu seul sur un Raspberry Pi (nom de la carte dans le device tree) ou imposé par `CORNELIUS_SMALL_MACHINE` : vision locale retirée (module **Vision** masqué), générateur d’images local retiré (seul OpenAI reste ; des images jusque-là locales restent désactivées tant que l’administration ne les réactive pas), visages cherchés sur une image de 640 pixels de large puis reconnus sur l’image entière. Les réglages enregistrés sont gardés.
 - L’installateur ne télécharge pas le modèle de vision sur une petite machine (`perception/download_models.py --no-vision`).
 - Page [Installer sur Raspberry Pi](docs/installation/raspberry-pi.md).
-
 - `npm run password` choisit le mot de passe de l’administration depuis un terminal (saisie masquée, gardé en base comme celui de la **Mise en route**, sans redémarrage). L’installateur Linux le propose à la fin tant que le mot de passe de départ est en place, puis affiche l’adresse de l’administration depuis un autre appareil : une installation par SSH n’est plus bloquée par le refus du mot de passe de départ à distance.
 
 **Corrigé**
 
 - Avec `--systemd`, l’installateur Linux active le « linger » du compte (`sudo loginctl enable-linger`) : les services ne s’arrêtent plus à la fermeture du terminal SSH et démarrent avec l’ordinateur, sans session ouverte. Constaté sur un Raspberry Pi 5 sous Raspberry Pi OS Lite.
+- Le miroir cache le pointeur de la souris quand elle ne bouge pas depuis 3 secondes, et dès l’ouverture de la page. Sous Wayland (cage, labwc), Chromium dessine son propre pointeur, qu’aucun outil du système ne cache.
 
 ### 2026-10-28 : fin au regard malgré la parole
 

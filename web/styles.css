@@ -131,6 +131,11 @@ body {
   font-size: var(--mirror-text);
   line-height: 1.4;
 }
+/* Pointeur caché tant que la souris ne bouge pas (useCursorIdle). */
+.mirror-page[data-cursor='hidden'],
+.mirror-page[data-cursor='hidden'] * {
+  cursor: none !important;
+}
 /* Au-dessus du canevas de l’orbe, qui couvre toute la page. */
 .mirror-top,
 .mirror-card-rail,

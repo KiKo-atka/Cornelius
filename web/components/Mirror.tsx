@@ -234,6 +234,33 @@ function useScreensaverSwipe(listening: boolean) {
   return dismissed;
 }
 
+/** Délai sans mouvement de souris avant que le pointeur ne disparaisse du miroir. */
+const CURSOR_IDLE_MS = 3_000;
+
+/**
+ * Vrai tant que la souris ne bouge pas : un miroir en plein écran n’a pas de pointeur à montrer,
+ * mais sous Wayland (cage, labwc) le navigateur en dessine un, qu’aucun outil du système ne
+ * cache. Le doigt ne le fait pas revenir.
+ */
+function useCursorIdle() {
+  const [idle, setIdle] = useState(true);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const move = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      setIdle(false);
+      clearTimeout(timer);
+      timer = setTimeout(() => setIdle(true), CURSOR_IDLE_MS);
+    };
+    addEventListener('pointermove', move);
+    return () => {
+      removeEventListener('pointermove', move);
+      clearTimeout(timer);
+    };
+  }, []);
+  return idle;
+}
+
 export function Mirror({ connection }: { connection: MirrorConnection }) {
   const { state, fresh, now, interrupted, reconnect } = connection;
   const preparation = useSyncExternalStore(subscribeAudioPreparation, audioPreparation);
@@ -337,6 +364,7 @@ export function Mirror({ connection }: { connection: MirrorConnection }) {
   );
   const mainCard = cards[0];
   const secondaryCards = cards.slice(1);
+  const cursorIdle = useCursorIdle();
 
   return (
     <main
@@ -345,6 +373,7 @@ export function Mirror({ connection }: { connection: MirrorConnection }) {
       // Taille de l’orbe choisie dans l’administration (100 % : taille d’origine).
       style={{ '--orb-user-scale': (state?.orbScale ?? 100) / 100 } as CSSProperties}
       data-screensaver={screensaverScene}
+      data-cursor={cursorIdle ? 'hidden' : undefined}
     >
       <div className="mirror-top">
         <header className="mirror-header">
